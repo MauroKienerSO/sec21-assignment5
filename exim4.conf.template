@@ -1,0 +1,22 @@
+tls_on_connect_ports = 465
+MAIN_TLS_ENABLE = yes
+MAIN_TLS_CERTIFICATE = /etc/letsencrypt/live/mail.kiener.sec21.tech/fullchain.pem
+MAIN_TLS_PRIVATEKEY = /etc/letsencrypt/live/mail.kiener.sec21.tech/privkey.pem
+
+dovecot_login:
+    driver = dovecot
+    public_name = LOGIN
+    server_socket = /var/run/dovecot/auth-client
+    server_set_id = $auth1
+    .ifndef AUTH_SERVER_ALLOW_NOTLS_PASSWORDS
+    server_advertise_condition = ${if eq{$tls_in_cipher}{}{}{*}}
+    .endif
+
+dovecot_plain:
+    driver = dovecot
+    public_name = PLAIN
+    server_socket = /var/run/dovecot/auth-client
+    server_set_id = $auth1
+    .ifndef AUTH_SERVER_ALLOW_NOTLS_PASSWORDS
+    server_advertise_condition = ${if eq{$tls_in_cipher}{}{}{*}}
+    .endif
